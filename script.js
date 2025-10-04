@@ -608,11 +608,10 @@ function switchTab(tabId) {
         }, 100);
     }
 }
-
 // Task functions
 function openTaskModal(taskId = null) {
     currentEditingTaskId = taskId;
-    
+
     if (taskId) {
         const task = tasks.find(t => t.id === taskId);
         if (task) {
@@ -630,16 +629,16 @@ function openTaskModal(taskId = null) {
         document.getElementById('taskModalTitle').textContent = 'Add New Task';
         taskForm.reset();
     }
-    
+
+    // Properly show modal each time
+    taskModal.style.display = "flex"; 
     taskModal.classList.add('active');
-    
+
     // Animate modal
-    gsap.from('#taskModal .modal-content', {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.3,
-        ease: 'back.out(1.7)'
-    });
+    gsap.fromTo('#taskModal .modal-content',
+        { scale: 0.8, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.7)' }
+    );
 }
 
 function closeTaskModalFunc() {
@@ -649,12 +648,25 @@ function closeTaskModalFunc() {
         duration: 0.2,
         ease: 'power2.in',
         onComplete: () => {
+            taskModal.style.display = "none";  // 🔑 important fix
             taskModal.classList.remove('active');
             taskForm.reset();
             currentEditingTaskId = null;
+            gsap.set('#taskModal .modal-content', { scale: 1, opacity: 1 });
         }
     });
 }
+
+// Update the event listeners for the add task buttons
+addTaskBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openTaskModal();
+});
+
+fabButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    openTaskModal();
+});
 
 function saveTask() {
     const title = document.getElementById('taskTitle').value;
@@ -1734,4 +1746,5 @@ function formatDate(dateString) {
 }
 
 // Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', init);
 document.addEventListener('DOMContentLoaded', init);
